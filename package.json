@@ -1,0 +1,20 @@
+{
+  "name": "dependency-analyser",
+  "version": "1.0.0",
+  "description": "This package compares package lockfiles and lists the dependency differences, a as well as highlighting any locked dependencies and their differences as well.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "dependency",
+    "management",
+    "yarn",
+    "yarn.lock",
+    "lockfiles"
+  ],
+  "author": "Steve Kisinga",
+  "license": "MIT",
+  "dependencies": {
+  }
+}
