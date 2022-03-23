@@ -5,19 +5,9 @@
 
 const fs = require("fs");
 const compareVersions = require('compare-versions');
-
+var mandatory_deps
 // console.log(source);
 // console.log(target);
-const mandatory_deps = [
-  {
-    name: "React",
-    version: "^1.0.0"
-  },
-  {
-    name: "execa",
-    version: "^5.8.0"
-  }
-]
 
 function check_mandatory(dependency, version){
   result = {
@@ -99,6 +89,9 @@ function readLockfiles(source, target, mandatory) {
 
   const sections = ["dependencies", "devDependencies", "resolutions"];
 
+  mandatory_deps = JSON.parse(
+    fs.readFileSync(mandatory, { encoding: "utf-8" })
+  );
   var results = {
     mandatoryAligned: true
   }
@@ -113,4 +106,4 @@ function readLockfiles(source, target, mandatory) {
   return results
 }
 
-readLockfiles("../OneShell", "../1JS/midgard")
+readLockfiles("../OneShell", "../1JS/midgard", "mandatory.json")
