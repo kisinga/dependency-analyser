@@ -16,5 +16,6 @@
   "author": "Steve Kisinga",
   "license": "MIT",
   "dependencies": {
+    "compare-versions": "^4.1.3"
   }
 }
