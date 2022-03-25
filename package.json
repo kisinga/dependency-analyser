@@ -4,7 +4,8 @@
   "description": "This package compares package lockfiles and lists the dependency differences, a as well as highlighting any locked dependencies and their differences as well.",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "node index.js"
   },
   "keywords": [
     "dependency",

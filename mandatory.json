@@ -1,10 +1,5 @@
-[
-    {
-      "name": "React",
-      "version": "^1.0.0"
-    },
-    {
-      "name": "execa",
-      "version": "^5.8.0"
-    }
-  ]
+{
+  "React": "^1.0.0",
+  "execa": "5.1.2",
+  "typescript": "3.8.0"
+}

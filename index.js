@@ -4,66 +4,64 @@
 // Results are timestamped from system time
 
 const fs = require("fs");
-const compareVersions = require('compare-versions');
-var mandatory_deps
+const compareVersions = require("compare-versions");
+
 // console.log(source);
 // console.log(target);
+var mandatory_deps;
 
-function check_mandatory(dependency, version){
+function check_mandatory(dependency, version) {
   result = {
-    mandatory: false,
-    aligned: true
-  }
-for (let dep of mandatory_deps){
-  if (dep.name.toLocaleLowerCase() === dependency.toLocaleLowerCase()){
-    var comparison = compareVersions(version, dep.version)
-    if (comparison >= 0){
+    mandatory: "false",
+    aligned: true,
+  };
+  if (mandatory_deps[dependency]) {
+    var comparison = compareVersions(version, mandatory_deps[dependency]);
+    if (comparison >= 0) {
       result = {
-        mandatory: true,
-        aligned: true
-      }
-    }else{
+        mandatory: mandatory_deps[dependency],
+        aligned: true,
+      };
+    } else {
       result = {
-        mandatory: true,
-        aligned: false
-      }
+        mandatory: mandatory_deps[dependency],
+        aligned: false,
+      };
     }
-    // escape the loop as soon as we find a match
-    break
   }
-}
-  return result
+  return result;
 }
 
 // this function compares deps given two objects
 function compareDeps(source, target, sourceName, targetName) {
   // search for the common deps
   var common = [];
-  var mandatoryAligned = true
+  var mandatoryAligned = true;
   if (source === undefined || target === undefined) {
     return common;
   }
 
   Object.keys(source).forEach((sourcePackageName) => {
     // console.log("Source:", source, "Version:", source[sourcePackageName])
-    
+
     // check if this dep is part of mandatory list and whether it's aligned
-    mandatory = check_mandatory(sourcePackageName, source[sourcePackageName])
-    if (!mandatory.aligned){
-      mandatoryAligned = false
+    mandatory = check_mandatory(sourcePackageName, source[sourcePackageName]);
+    if (!mandatory.aligned) {
+      mandatoryAligned = false;
     }
-    Object.keys(target).forEach((targetPackageName) => {
-      if (sourcePackageName.toLocaleLowerCase() === targetPackageName.toLocaleLowerCase()) {
-        common.push({...{
+    if (target[sourcePackageName]) {
+      common.push({
+        ...{
           [sourcePackageName]: {
             [sourceName]: source[sourcePackageName],
             [targetName]: target[sourcePackageName],
           },
-        }, ...mandatory});
-      }
-    });
+        },
+        ...mandatory,
+      });
+    }
   });
-  return {common, mandatoryAligned};
+  return { common, mandatoryAligned };
 }
 
 // this function reads a file
@@ -89,21 +87,38 @@ function readLockfiles(source, target, mandatory) {
 
   const sections = ["dependencies", "devDependencies", "resolutions"];
 
-  mandatory_deps = JSON.parse(
-    fs.readFileSync(mandatory, { encoding: "utf-8" })
-  );
   var results = {
-    mandatoryAligned: true
-  }
+    mandatoryAligned: true,
+  };
   for (section of sections) {
-    results[section] = compareDeps(sourceData[section], targetData[section], sourceData["name"], targetData["name"])
-    // Hoist the value of mandatoryAligned and make it false in case any section id=s not aligned
-    if (!results[section].mandatoryAligned){
-      results.mandatoryAligned = false
+    results[section] = compareDeps(
+      sourceData[section],
+      targetData[section],
+      sourceData["name"],
+      targetData["name"]
+    );
+
+    mandatory_deps = JSON.parse(
+      fs.readFileSync(mandatory, { encoding: "utf-8" })
+    );
+    var results = {
+      mandatoryAligned: true,
+    };
+    for (section of sections) {
+      results[section] = compareDeps(
+        sourceData[section],
+        targetData[section],
+        sourceData["name"],
+        targetData["name"]
+      );
+      // Hoist the value of mandatoryAligned and make it false in case any section id=s not aligned
+      if (!results[section].mandatoryAligned) {
+        results.mandatoryAligned = false;
+      }
     }
+    console.log(results);
+    return results;
   }
-  console.log(results);
-  return results
 }
 
-readLockfiles("../OneShell", "../1JS/midgard", "mandatory.json")
+readLockfiles("../OneShell", "../1JS/midgard", "mandatory.json");
